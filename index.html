@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第三季影印機責任激勵獎金計算器</title>
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 650px;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #1a365d;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .case-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+        .case-row input {
+            flex: 1;
+        }
+        .btn-add {
+            background-color: #38a169;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        .btn-add:hover { background-color: #2f855a; }
+        .btn-del {
+            background-color: #e53e3e;
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .sub-text {
+            font-size: 13px;
+            color: #4a5568;
+            margin-top: 2px;
+            margin-bottom: 8px;
+        }
+        .btn-calc {
+            width: 100%;
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        .btn-calc:hover {
+            background-color: #2b6cb0;
+        }
+        .result-box {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #edf2f7;
+            border-radius: 8px;
+            display: none;
+        }
+        .result-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2b6cb0;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #cbd5e0;
+            padding-bottom: 5px;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        .highlight { font-weight: bold; color: #c53030; }
+        .success { font-weight: bold; color: #2f855a; }
+        .case-section {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>影印機責任激勵獎金計算器</h2>
+    
+    <div class="form-group">
+        <label for="unitType">適用對象（單位類型）：</label>
+        <select id="unitType">
+            <option value="協力單位">協力單位 (屏東/板橋/苗栗/宜蘭/南投/北台中/嘉義/南台南/新莊/基隆)</option>
+            <option value="一般單位">一般單位 (非上述協力單位)</option>
+        </select>
+    </div>
+
+    <!-- 本牌區塊 -->
+    <div class="case-section">
+        <div class="form-group" style="margin-bottom: 5px;">
+            <label for="benpaiTotal">本牌新機總台數 (含散案與大案)：</label>
+            <input type="number" id="benpaiTotal" value="0" min="0">
+        </div>
+        <div class="sub-text">請直接輸入本月本牌賣出的「全部新機台數」。</div>
+        
+        <label style="margin-top: 12px;">大案填寫（單一客戶 4 台以上）：</label>
+        <div class="sub-text">* 若有單一客戶買超過 3 台的大案，請點擊下方按鈕新增（系統會自動剔除超過 3 台的部分）。</div>
+        <div id="benpaiCaseList"></div>
+        <button class="btn-add" onclick="addCase('benpaiCaseList', '輸入大案台數 (例: 8)')">＋ 新增本牌大案</button>
+    </div>
+
+    <!-- 新開發區塊 -->
+    <div class="case-section">
+        <div class="form-group" style="margin-bottom: 5px;">
+            <label for="xinkaifaTotal">新開發新機總台數 (含散案與大案)：</label>
+            <input type="number" id="xinkaifaTotal" value="0" min="0">
+        </div>
+        <div class="sub-text">請直接輸入本月新開發賣出的「全部新機台數」。</div>
+
+        <label style="margin-top: 12px;">大案填寫（單一客戶 7 台以上）：</label>
+        <div class="sub-text">* 若有單一客戶買超過 6 台的大案，請點擊下方按鈕新增（系統會自動剔除超過 6 台的部分）。</div>
+        <div id="xinkaifaCaseList"></div>
+        <button class="btn-add" onclick="addCase('xinkaifaCaseList', '輸入大案台數 (例: 10)')">＋ 新增新開發大案</button>
+    </div>
+
+    <div class="form-group">
+        <label for="oldBuyout">舊機賣斷台數：</label>
+        <input type="number" id="oldBuyout" value="0" min="0">
+    </div>
+
+    <button class="btn-calc" onclick="calculate()">開始計算</button>
+
+    <!-- 結果顯示區域 -->
+    <div class="result-box" id="resultBox">
+        <div class="result-title">計算結果</div>
+        <div class="result-item"><span>採計後新機總台數：</span><span id="resTotalNew">0 台</span></div>
+        <div class="result-item"><span>採計後總台數 (含舊機)：</span><span id="resTotalMachines">0 台</span></div>
+        <div class="result-item"><span>責任額缺口：</span><span id="resDiff">0 台</span></div>
+        <hr>
+        <div class="result-item"><span>未達責任額加計成本(懲罰)：</span><span id="resCost" class="highlight">0 元</span></div>
+        <hr>
+        <div class="result-item"><span>A 方案採計獎金：</span><span id="resBonusA">0 元</span></div>
+        <div class="result-item"><span>B 方案採計獎金：</span><span id="resBonusB">0 元</span></div>
+        <div class="result-item"><span>擇優建議方案：</span><span id="resBestPlan" class="success">-</span></div>
+        <div class="result-item"><span>最終獲得其他收入(獎金)：</span><span id="resFinalBonus" class="success">0 元</span></div>
+        <hr>
+        <div class="result-item" style="font-size: 18px; font-weight: bold;">
+            <span>淨結算金額 (獎金 - 成本)：</span>
+            <span id="resNetAmount" class="success">0 元</span>
+        </div>
+    </div>
+</div>
+
+<script>
+// 動態新增大案輸入欄位
+function addCase(containerId, placeholderText) {
+    const container = document.getElementById(containerId);
+    const div = document.createElement('div');
+    div.className = 'case-row';
+    div.innerHTML = `
+        <input type="number" class="case-input" placeholder="${placeholderText}" value="0" min="0">
+        <button class="btn-del" onclick="this.parentElement.remove()">✕</button>
+    `;
+    container.appendChild(div);
+}
+
+function calculate() {
+    const unitType = document.getElementById('unitType').value;
+    const benpaiTotalInput = parseInt(document.getElementById('benpaiTotal').value) || 0;
+    const xinkaifaTotalInput = parseInt(document.getElementById('xinkaifaTotal').value) || 0;
+    const oldBuyout = parseInt(document.getElementById('oldBuyout').value) || 0;
+
+    // 1. 本牌採計邏輯：新機總數 - 大案超出部分 (每大案超過 3 台扣除超出部分)
+    let benpaiExceeded = 0;
+    const benpaiInputs = document.querySelectorAll('#benpaiCaseList .case-input');
+    benpaiInputs.forEach(input => {
+        let val = parseInt(input.value) || 0;
+        if (val > 3) {
+            benpaiExceeded += (val - 3); // 算出這筆大案爆掉幾台
+        }
+    });
+    // 本牌採計台數不能小於 0
+    const benpaiCappedTotal = Math.max(0, benpaiTotalInput - benpaiExceeded);
+
+    // 2. 新開發採計邏輯：新機總數 - 大案超出部分 (每大案超過 6 台扣除超出部分)
+    let xinkaifaExceeded = 0;
+    const xinkaifaInputs = document.querySelectorAll('#xinkaifaCaseList .case-input');
+    xinkaifaInputs.forEach(input => {
+        let val = parseInt(input.value) || 0;
+        if (val > 6) {
+            xinkaifaExceeded += (val - 6); // 算出這筆大案爆掉幾台
+        }
+    });
+    // 新開發採計台數不能小於 0
+    const xinkaifaCappedTotal = Math.max(0, xinkaifaTotalInput - xinkaifaExceeded);
+
+    // 採計後與原始台數總計
+    const totalNew = benpaiCappedTotal + xinkaifaCappedTotal;
+    const rawTotalNew = benpaiTotalInput + xinkaifaTotalInput; // 用於責任額門檻判斷
+    const totalMachines = totalNew + oldBuyout;
+
+    // 3. 規則設定
+    const rules = {
+        '協力單位': {
+            minQuota: 4,
+            costPerDiff: 10000,
+            A: [[3, 5, 10000], [4, 6, 12000], [5, 7, 14000], [6, 8, 15000]],
+            B: [[9, 15000], [11, 30000], [13, 40000], [15, 50000]]
+        },
+        '一般單位': {
+            minQuota: 5,
+            costPerDiff: 20000,
+            A: [[4, 6, 10000], [5, 7, 12000], [6, 8, 14000], [7, 9, 15000]],
+            B: [[11, 15000], [13, 30000], [15, 40000], [17, 50000]]
+        }
+    };
+
+    const cfg = rules[unitType];
+
+    // 4. 計算加計成本 (未達責任台數，按原始總台數判定缺口)
+    let cost = 0;
+    let quotaDiff = 0;
+    if (rawTotalNew < cfg.minQuota) {
+        quotaDiff = cfg.minQuota - rawTotalNew;
+        cost = quotaDiff * cfg.costPerDiff;
+    }
+
+    // 5. 計算 A 方案獎金
+    let bonusA = 0;
+    for (let i = cfg.A.length - 1; i >= 0; i--) {
+        let [oldReq, newReq, rewardPerSet] = cfg.A[i];
+        if (oldBuyout >= oldReq && totalNew >= newReq) {
+            let sets = Math.min(oldBuyout, totalNew);
+            bonusA = sets * rewardPerSet;
+            break;
+        }
+    }
+    if (bonusA > 0 && xinkaifaTotalInput < 3) {
+        bonusA /= 2; // 未達3台新開發，加計收入減半
+    }
+
+    // 6. 計算 B 方案獎金
+    let bonusB = 0;
+    if (rawTotalNew >= cfg.minQuota) {
+        for (let i = cfg.B.length - 1; i >= 0; i--) {
+            let [totalReq, reward] = cfg.B[i];
+            if (totalMachines >= totalReq) {
+                bonusB = reward;
+                break;
+            }
+        }
+    }
+    if (bonusB > 0 && xinkaifaTotalInput < 3) {
+        bonusB /= 2; // 未達3台新開發，加計收入減半
+    }
+
+    // 7. 擇優採計
+    let bestPlan = bonusA >= bonusB ? 'A 方案' : 'B 方案';
+    let finalBonus = Math.max(bonusA, bonusB);
+    let netAmount = finalBonus - cost;
+
+    // 8. 顯示結果
+    document.getElementById('resTotalNew').innerText = `${totalNew} 台`;
+    document.getElementById('resTotalMachines').innerText = `${totalMachines} 台`;
+    document.getElementById('resDiff').innerText = `${quotaDiff} 台`;
+    document.getElementById('resCost').innerText = `-$${cost.toLocaleString()} 元`;
+    document.getElementById('resBonusA').innerText = `$${bonusA.toLocaleString()} 元`;
+    document.getElementById('resBonusB').innerText = `$${bonusB.toLocaleString()} 元`;
+    document.getElementById('resBestPlan').innerText = bestPlan;
+    document.getElementById('resFinalBonus').innerText = `$${finalBonus.toLocaleString()} 元`;
+    
+    const netElem = document.getElementById('resNetAmount');
+    netElem.innerText = `$${netAmount.toLocaleString()} 元`;
+    netElem.className = netAmount < 0 ? 'highlight' : 'success';
+
+    document.getElementById('resultBox').style.display = 'block';
+}
+</script>
+
+</body>
+</html>
