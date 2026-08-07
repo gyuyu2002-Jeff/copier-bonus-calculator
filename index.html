@@ -670,6 +670,20 @@
         </div>
     </div>
 
+    <!-- 分公司當月損益 -->
+    <div class="case-section">
+        <div class="section-title">
+            <span>💰 分公司當月損益</span>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+            <label for="branchProfit">當月損益（獲利金額）：</label>
+            <input type="number" id="branchProfit" value="0">
+        </div>
+        <div class="sub-text">
+            * 用於計算未達責任台數之成本懲罰扣抵上限（公司獲利扣減懲罰至剩餘 10,000 元為止，不扣至負數）。
+        </div>
+    </div>
+
     <button class="btn-calc" onclick="calculate()">開始計算獎金</button>
 
     <!-- 結果顯示區域 -->
@@ -746,6 +760,9 @@
             <p><span>新開發大案溢出扣除：</span><span class="val warning" id="auditXinkaifaExceeded">0 台</span></p>
             <p><span>新開發總銷售量：</span><span class="val" id="auditXinkaifaTotal">0 台</span></p>
             <p><span>新開發減半條款是否觸發：</span><span class="val" id="auditHalfPenalty">無觸發</span></p>
+            <p><span>分公司申報當月損益：</span><span class="val" id="auditBranchProfit">$0 元</span></p>
+            <p><span>未達責任額原始懲罰：</span><span class="val warning" id="auditRawCost">$0 元</span></p>
+            <p><span>實際扣抵後懲罰金額：</span><span class="val warning" id="auditCost">$0 元</span></p>
         </div>
     </div>
 </div>
@@ -870,31 +887,36 @@ function calculate() {
     const rawTotalNew = benpaiTotalInput + xinkaifaTotalInput; // 用於責任額門檻判斷
     const totalMachines = totalNew + oldBuyout;
 
-    // 3. 規則設定
+    // 3. 規則設定 (2026 第 3 季 0703 更新版)
     const rules = {
         '協力單位': {
             minQuota: 4,
             costPerDiff: 10000,
-            A: [[3, 5, 10000], [4, 6, 12000], [5, 7, 14000], [6, 8, 15000]],
-            B: [[9, 15000], [11, 30000], [13, 40000], [15, 50000]]
+            A: [[3, 4, 10000], [4, 5, 14000], [5, 6, 18000], [6, 7, 23000]],
+            B: [[8, 15000], [10, 30000], [12, 40000], [14, 50000]]
         },
         '一般單位': {
             minQuota: 5,
             costPerDiff: 20000,
-            A: [[4, 6, 10000], [5, 7, 12000], [6, 8, 14000], [7, 9, 15000]],
-            B: [[11, 15000], [13, 30000], [15, 40000], [17, 50000]]
+            A: [[4, 5, 10000], [5, 6, 14000], [6, 7, 18000], [7, 8, 23000]],
+            B: [[10, 15000], [12, 30000], [14, 40000], [16, 50000]]
         }
     };
 
     const cfg = rules[unitType];
 
     // 4. 計算加計成本 (未達責任台數，按原始總台數判定缺口)
-    let cost = 0;
+    let rawCost = 0;
     let quotaDiff = 0;
     if (rawTotalNew < cfg.minQuota) {
         quotaDiff = cfg.minQuota - rawTotalNew;
-        cost = quotaDiff * cfg.costPerDiff;
+        rawCost = quotaDiff * cfg.costPerDiff;
     }
+
+    // 損益扣除上限：公司獲利扣減懲罰至剩餘 10,000 元獲利為止 (獲利若小於 10,000 元則懲罰為 0)
+    const branchProfit = parseInt(document.getElementById('branchProfit').value) || 0;
+    const maxPenalty = Math.max(0, branchProfit - 10000);
+    const cost = Math.min(rawCost, maxPenalty);
 
     // 5. 計算 A 方案獎金
     let bonusA = 0;
@@ -1011,6 +1033,9 @@ function calculate() {
     document.getElementById('auditXinkaifaExceeded').innerText = `${xinkaifaExceeded} 台`;
     document.getElementById('auditXinkaifaTotal').innerText = `${xinkaifaTotalInput} 台`;
     document.getElementById('auditHalfPenalty').innerText = (xinkaifaTotalInput < 3 && finalBonus > 0) ? '已觸發 (新開發未滿 3 台，獎金減半)' : '無觸發';
+    document.getElementById('auditBranchProfit').innerText = `$${branchProfit.toLocaleString()} 元`;
+    document.getElementById('auditRawCost').innerText = `$${rawCost.toLocaleString()} 元`;
+    document.getElementById('auditCost').innerText = `$${cost.toLocaleString()} 元`;
 
     // 展開結果區塊
     document.getElementById('resultBox').style.display = 'block';
