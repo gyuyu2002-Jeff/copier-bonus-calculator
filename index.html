@@ -4,133 +4,556 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>第三季影印機責任激勵獎金計算器</title>
+    <!-- Google Fonts: Outfit and Noto Sans TC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: "Microsoft JhengHei", Arial, sans-serif;
-            background-color: #f4f7f6;
+        :root {
+            --bg-gradient: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent-primary: #38bdf8; /* electric cyan */
+            --accent-secondary: #6366f1; /* indigo */
+            --accent-success: #34d399; /* emerald */
+            --accent-warning: #f87171; /* coral/rose */
+            --accent-gold: #fbbf24; /* gold */
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-family: 'Outfit', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 40px 20px;
             display: flex;
             justify-content: center;
+            align-items: flex-start;
+            overflow-x: hidden;
         }
+
+        /* Subtle ambient glow backgrounds */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: var(--accent-secondary);
+            filter: blur(120px);
+            opacity: 0.15;
+            z-index: -1;
+            pointer-events: none;
+        }
+        body::before { top: 10%; left: 10%; }
+        body::after { bottom: 15%; right: 10%; background: var(--accent-primary); }
+
         .container {
-            background-color: #ffffff;
             width: 100%;
-            max-width: 650px;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 800px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.6s ease-out;
         }
-        h2 {
-            color: #1a365d;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 35px;
         }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 30%, var(--accent-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 24px;
         }
+
         label {
             display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
-            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-main);
         }
-        select, input {
+
+        /* Modern Custom Select & Inputs */
+        select, input[type="number"] {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #cbd5e0;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 16px;
+            padding: 14px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 1rem;
+            font-family: var(--font-family);
+            outline: none;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
         }
+
+        select:focus, input[type="number"]:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        select option {
+            background-color: #0f172a;
+            color: var(--text-main);
+        }
+
+        .case-section {
+            background: rgba(15, 23, 42, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .sub-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
         .case-row {
             display: flex;
-            gap: 10px;
-            margin-bottom: 8px;
+            gap: 12px;
+            margin-bottom: 10px;
             align-items: center;
+            animation: slideIn 0.3s ease-out;
         }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .case-row input {
             flex: 1;
         }
+
+        /* Buttons Styling */
         .btn-add {
-            background-color: #38a169;
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 6px;
+            background: rgba(52, 211, 153, 0.1);
+            color: var(--accent-success);
+            border: 1px solid rgba(52, 211, 153, 0.2);
+            padding: 10px 18px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 14px;
-            margin-top: 5px;
-            font-weight: bold;
+            font-size: 0.88rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
         }
-        .btn-add:hover { background-color: #2f855a; }
+
+        .btn-add:hover {
+            background: rgba(52, 211, 153, 0.2);
+            color: #fff;
+            border-color: var(--accent-success);
+            transform: translateY(-1px);
+        }
+
         .btn-del {
-            background-color: #e53e3e;
-            color: white;
-            border: none;
-            padding: 10px 14px;
-            border-radius: 6px;
+            background: rgba(248, 113, 113, 0.1);
+            color: var(--accent-warning);
+            border: 1px solid rgba(248, 113, 113, 0.2);
+            padding: 14px 18px;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .sub-text {
-            font-size: 13px;
-            color: #4a5568;
-            margin-top: 2px;
-            margin-bottom: 8px;
+
+        .btn-del:hover {
+            background: rgba(248, 113, 113, 0.25);
+            color: #fff;
+            border-color: var(--accent-warning);
         }
+
         .btn-calc {
             width: 100%;
-            background-color: #3182ce;
+            background: linear-gradient(90deg, var(--accent-secondary) 0%, var(--accent-primary) 100%);
             color: white;
             border: none;
-            padding: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 6px;
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 14px;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 20px;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
         }
+
+        .btn-calc::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
         .btn-calc:hover {
-            background-color: #2b6cb0;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6);
         }
+
+        .btn-calc:hover::before {
+            left: 100%;
+        }
+
+        .btn-calc:active {
+            transform: translateY(1px);
+        }
+
+        /* Result Panel Styling */
         .result-box {
-            margin-top: 25px;
-            padding: 15px;
-            background-color: #edf2f7;
-            border-radius: 8px;
+            margin-top: 40px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
             display: none;
+            animation: fadeIn 0.5s ease-out;
         }
-        .result-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2b6cb0;
-            margin-bottom: 10px;
-            border-bottom: 2px solid #cbd5e0;
-            padding-bottom: 5px;
-        }
-        .result-item {
+
+        .result-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 15px;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 16px;
+            margin-bottom: 24px;
         }
-        .highlight { font-weight: bold; color: #c53030; }
-        .success { font-weight: bold; color: #2f855a; }
-        .case-section {
-            background: #f7fafc;
-            padding: 15px;
+
+        .result-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        /* Metric Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Cost alert styling */
+        .cost-banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(248, 113, 113, 0.08);
+            border: 1px solid rgba(248, 113, 113, 0.2);
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+        }
+
+        .cost-banner.hidden {
+            display: none;
+        }
+
+        .cost-banner .cost-title {
+            color: var(--accent-warning);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cost-banner .cost-amount {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--accent-warning);
+        }
+
+        /* Schemes Comparison Cards */
+        .schemes-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .scheme-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .scheme-card.best {
+            background: rgba(251, 191, 36, 0.03);
+            border: 2px solid var(--accent-gold);
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.12);
+            transform: scale(1.02);
+        }
+
+        .scheme-badge {
+            position: absolute;
+            top: -12px;
+            right: 16px;
+            background: var(--accent-gold);
+            color: #0f172a;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(251, 191, 36, 0.3);
+            display: none;
+        }
+
+        .scheme-card.best .scheme-badge {
+            display: block;
+        }
+
+        .scheme-name {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .scheme-card.best .scheme-name {
+            color: var(--accent-gold);
+        }
+
+        .scheme-reward {
+            font-size: 1.8rem;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+            color: #fff;
+            margin-bottom: 14px;
+        }
+
+        .scheme-detail {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 12px;
+            margin-top: auto;
+        }
+
+        /* Net Settlement Large Banner */
+        .net-settlement {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 24px;
+        }
+
+        .net-label {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .net-amount {
+            font-size: 2.6rem;
+            font-weight: 900;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.2;
+        }
+
+        .net-amount.positive {
+            background: linear-gradient(135deg, #fff 30%, var(--accent-success) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(52, 211, 153, 0.3);
+        }
+
+        .net-amount.negative {
+            background: linear-gradient(135deg, #fff 30%, var(--accent-warning) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(248, 113, 113, 0.3);
+        }
+
+        /* Detailed Audit Log */
+        .audit-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            color: var(--accent-primary);
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin: 0 auto;
+            padding: 8px 16px;
             border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            margin-bottom: 15px;
+        }
+
+        .audit-toggle:hover {
+            background: rgba(56, 189, 248, 0.08);
+        }
+
+        .audit-details {
+            display: none;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 16px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            animation: fadeIn 0.4s ease-out;
+            text-align: left;
+        }
+
+        .audit-details p {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+            padding-bottom: 6px;
+        }
+
+        .audit-details p:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .audit-details span.val {
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+        }
+
+        .audit-details span.val.warning {
+            color: var(--accent-warning);
+        }
+
+        /* Responsive breakpoints */
+        @media (max-width: 680px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .schemes-container {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .scheme-card.best {
+                transform: none;
+            }
+
+            .container {
+                padding: 24px;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>影印機責任激勵獎金計算器</h2>
+    <header>
+        <h1>第三季影印機責任激勵獎金計算器</h1>
+        <p>快速計算責任額缺口、A/B方案加計獎金與最終淨利結算</p>
+    </header>
     
+    <!-- 單位類型選擇 -->
     <div class="form-group">
         <label for="unitType">適用對象（單位類型）：</label>
         <select id="unitType">
@@ -141,56 +564,133 @@
 
     <!-- 本牌區塊 -->
     <div class="case-section">
-        <div class="form-group" style="margin-bottom: 5px;">
+        <div class="section-title">
+            <span>📦 本牌新機設定</span>
+        </div>
+        <div class="form-group" style="margin-bottom: 8px;">
             <label for="benpaiTotal">本牌新機總台數 (含散案與大案)：</label>
             <input type="number" id="benpaiTotal" value="0" min="0">
         </div>
         <div class="sub-text">請直接輸入本月本牌賣出的「全部新機台數」。</div>
         
-        <label style="margin-top: 12px;">大案填寫（單一客戶 4 台以上）：</label>
+        <label style="margin-top: 16px; display: flex; align-items: center; gap: 4px;">
+            🏢 大案填寫 <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">(單一客戶 4 台以上)</span>
+        </label>
         <div class="sub-text">* 若有單一客戶買超過 3 台的大案，請點擊下方按鈕新增（系統會自動剔除超過 3 台的部分）。</div>
         <div id="benpaiCaseList"></div>
-        <button class="btn-add" onclick="addCase('benpaiCaseList', '輸入大案台數 (例: 8)')">＋ 新增本牌大案</button>
+        <button class="btn-add" onclick="addCase('benpaiCaseList', '輸入大案台數 (例: 8)')">
+            <span>＋</span> 新增本牌大案
+        </button>
     </div>
 
     <!-- 新開發區塊 -->
     <div class="case-section">
-        <div class="form-group" style="margin-bottom: 5px;">
+        <div class="section-title">
+            <span>🚀 新開發新機設定</span>
+        </div>
+        <div class="form-group" style="margin-bottom: 8px;">
             <label for="xinkaifaTotal">新開發新機總台數 (含散案與大案)：</label>
             <input type="number" id="xinkaifaTotal" value="0" min="0">
         </div>
         <div class="sub-text">請直接輸入本月新開發賣出的「全部新機台數」。</div>
 
-        <label style="margin-top: 12px;">大案填寫（單一客戶 7 台以上）：</label>
+        <label style="margin-top: 16px; display: flex; align-items: center; gap: 4px;">
+            🏢 大案填寫 <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">(單一客戶 7 台以上)</span>
+        </label>
         <div class="sub-text">* 若有單一客戶買超過 6 台的大案，請點擊下方按鈕新增（系統會自動剔除超過 6 台的部分）。</div>
         <div id="xinkaifaCaseList"></div>
-        <button class="btn-add" onclick="addCase('xinkaifaCaseList', '輸入大案台數 (例: 10)')">＋ 新增新開發大案</button>
+        <button class="btn-add" onclick="addCase('xinkaifaCaseList', '輸入大案台數 (例: 10)')">
+            <span>＋</span> 新增新開發大案
+        </button>
     </div>
 
-    <div class="form-group">
-        <label for="oldBuyout">舊機賣斷台數：</label>
-        <input type="number" id="oldBuyout" value="0" min="0">
+    <!-- 舊機賣斷 -->
+    <div class="case-section">
+        <div class="section-title">
+            <span>🔄 舊機交易設定</span>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+            <label for="oldBuyout">舊機賣斷台數：</label>
+            <input type="number" id="oldBuyout" value="0" min="0">
+        </div>
     </div>
 
-    <button class="btn-calc" onclick="calculate()">開始計算</button>
+    <button class="btn-calc" onclick="calculate()">開始計算計數</button>
 
     <!-- 結果顯示區域 -->
     <div class="result-box" id="resultBox">
-        <div class="result-title">計算結果</div>
-        <div class="result-item"><span>採計後新機總台數：</span><span id="resTotalNew">0 台</span></div>
-        <div class="result-item"><span>採計後總台數 (含舊機)：</span><span id="resTotalMachines">0 台</span></div>
-        <div class="result-item"><span>責任額缺口：</span><span id="resDiff">0 台</span></div>
-        <hr>
-        <div class="result-item"><span>未達責任額加計成本(懲罰)：</span><span id="resCost" class="highlight">0 元</span></div>
-        <hr>
-        <div class="result-item"><span>A 方案採計獎金：</span><span id="resBonusA">0 元</span></div>
-        <div class="result-item"><span>B 方案採計獎金：</span><span id="resBonusB">0 元</span></div>
-        <div class="result-item"><span>擇優建議方案：</span><span id="resBestPlan" class="success">-</span></div>
-        <div class="result-item"><span>最終獲得其他收入(獎金)：</span><span id="resFinalBonus" class="success">0 元</span></div>
-        <hr>
-        <div class="result-item" style="font-size: 18px; font-weight: bold;">
-            <span>淨結算金額 (獎金 - 成本)：</span>
-            <span id="resNetAmount" class="success">0 元</span>
+        <div class="result-header">
+            <span class="result-title">📊 計算結算報表</span>
+        </div>
+
+        <!-- 數據指標網格 -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">採計後新機總數</div>
+                <div class="metric-value" id="resTotalNew">0 台</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">採計後總台數 (含舊機)</div>
+                <div class="metric-value" id="resTotalMachines">0 台</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">責任額缺口</div>
+                <div class="metric-value" id="resDiff">0 台</div>
+            </div>
+        </div>
+
+        <!-- 責任成本懲罰 -->
+        <div class="cost-banner" id="costBanner">
+            <span class="cost-title">⚠️ 未達責任額懲罰加計成本：</span>
+            <span class="cost-amount" id="resCost">-$0</span>
+        </div>
+
+        <!-- 方案擇優對比 -->
+        <div class="schemes-container">
+            <!-- A 方案 -->
+            <div class="scheme-card" id="cardA">
+                <div class="scheme-badge">🏆 擇優推薦</div>
+                <div>
+                    <div class="scheme-name">A 方案 (組數加計)</div>
+                    <div class="scheme-reward" id="resBonusA">$0</div>
+                </div>
+                <div class="scheme-detail" id="detailA">
+                    依新機/舊機成對組數加計獎金。<br>
+                    未達3台新開發，加計收入減半。
+                </div>
+            </div>
+
+            <!-- B 方案 -->
+            <div class="scheme-card" id="cardB">
+                <div class="scheme-badge">🏆 擇優推薦</div>
+                <div>
+                    <div class="scheme-name">B 方案 (總量達標)</div>
+                    <div class="scheme-reward" id="resBonusB">$0</div>
+                </div>
+                <div class="scheme-detail" id="detailB">
+                    總台數(含舊機)達標發放固定獎金。<br>
+                    未達責任額則不適用。未達3台新開發減半。
+                </div>
+            </div>
+        </div>
+
+        <!-- 最終淨收益 -->
+        <div class="net-settlement">
+            <div class="net-label">最終淨結算金額 (獎金 - 成本)</div>
+            <div class="net-amount positive" id="resNetAmount">$0 元</div>
+        </div>
+
+        <!-- 詳細計算歷程 (Audit Trail) -->
+        <button class="audit-toggle" onclick="toggleAudit()">
+            <span>🔍 展開計算步驟明細</span>
+        </button>
+        <div class="audit-details" id="auditDetails">
+            <p><span>適用責任額門檻：</span><span class="val" id="auditMinQuota">0 台</span></p>
+            <p><span>原始銷售新機總數：</span><span class="val" id="auditRawNew">0 台</span></p>
+            <p><span>本牌大案溢出扣除：</span><span class="val warning" id="auditBenpaiExceeded">0 台</span></p>
+            <p><span>新開發大案溢出扣除：</span><span class="val warning" id="auditXinkaifaExceeded">0 台</span></p>
+            <p><span>新開發總銷售量：</span><span class="val" id="auditXinkaifaTotal">0 台</span></p>
+            <p><span>新開發減半條款是否觸發：</span><span class="val" id="auditHalfPenalty">無觸發</span></p>
         </div>
     </div>
 </div>
@@ -208,6 +708,65 @@ function addCase(containerId, placeholderText) {
     container.appendChild(div);
 }
 
+// 切換展開審計細節
+let auditVisible = false;
+function toggleAudit() {
+    auditVisible = !auditVisible;
+    const details = document.getElementById('auditDetails');
+    const toggleBtn = document.querySelector('.audit-toggle span');
+    if (auditVisible) {
+        details.style.display = 'block';
+        toggleBtn.innerText = '✕ 隱藏計算步驟明細';
+    } else {
+        details.style.display = 'none';
+        toggleBtn.innerText = '🔍 展開計算步驟明細';
+    }
+}
+
+// 帶數字滾動動畫的更新函數
+function animateNumber(element, targetVal, formatAsCurrency = false) {
+    let startVal = 0;
+    const textContent = element.innerText.replace(/[^0-9.-]/g, '');
+    if (!isNaN(parseFloat(textContent))) {
+        startVal = parseFloat(textContent);
+    }
+    
+    // 如果是負數
+    const isNegative = targetVal < 0;
+    const absTarget = Math.abs(targetVal);
+    const absStart = Math.abs(startVal);
+    
+    const duration = 400; // 毫秒
+    const startTime = performance.now();
+    
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // 緩動函數 EaseOutQuad
+        const easeProgress = progress * (2 - progress);
+        const currentVal = Math.round(startVal + (targetVal - startVal) * easeProgress);
+        
+        if (formatAsCurrency) {
+            const formatted = Math.abs(currentVal).toLocaleString();
+            element.innerText = `${isNegative ? '-' : ''}$${formatted} 元`;
+        } else {
+            element.innerText = `${currentVal} 台`;
+        }
+        
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        } else {
+            if (formatAsCurrency) {
+                element.innerText = `${isNegative ? '-' : ''}$${absTarget.toLocaleString()} 元`;
+            } else {
+                element.innerText = `${absTarget} 台`;
+            }
+        }
+    }
+    requestAnimationFrame(update);
+}
+
 function calculate() {
     const unitType = document.getElementById('unitType').value;
     const benpaiTotalInput = parseInt(document.getElementById('benpaiTotal').value) || 0;
@@ -223,7 +782,6 @@ function calculate() {
             benpaiExceeded += (val - 3); // 算出這筆大案爆掉幾台
         }
     });
-    // 本牌採計台數不能小於 0
     const benpaiCappedTotal = Math.max(0, benpaiTotalInput - benpaiExceeded);
 
     // 2. 新開發採計邏輯：新機總數 - 大案超出部分 (每大案超過 6 台扣除超出部分)
@@ -235,7 +793,6 @@ function calculate() {
             xinkaifaExceeded += (val - 6); // 算出這筆大案爆掉幾台
         }
     });
-    // 新開發採計台數不能小於 0
     const xinkaifaCappedTotal = Math.max(0, xinkaifaTotalInput - xinkaifaExceeded);
 
     // 採計後與原始台數總計
@@ -243,21 +800,19 @@ function calculate() {
     const rawTotalNew = benpaiTotalInput + xinkaifaTotalInput; // 用於責任額門檻判斷
     const totalMachines = totalNew + oldBuyout;
 
-// 3. 規則設定 (2026 第 3 季 0703 更新版)
+    // 3. 規則設定
     const rules = {
         '協力單位': {
             minQuota: 4,
             costPerDiff: 10000,
-            // A方案陣列格式: [舊機實斷門檻, 新機台數門檻, 每組加計金額]
-            A: [[3, 4, 10000], [4, 5, 14000], [5, 6, 18000], [6, 7, 23000]],
-            // B方案陣列格式: [新舊合計總台數門檻, 達成獎金]
-            B: [[8, 15000], [10, 30000], [12, 40000], [14, 50000]]
+            A: [[3, 5, 10000], [4, 6, 12000], [5, 7, 14000], [6, 8, 15000]],
+            B: [[9, 15000], [11, 30000], [13, 40000], [15, 50000]]
         },
         '一般單位': {
             minQuota: 5,
             costPerDiff: 20000,
-            A: [[4, 5, 10000], [5, 6, 14000], [6, 7, 18000], [7, 8, 23000]],
-            B: [[10, 15000], [12, 30000], [14, 40000], [16, 50000]]
+            A: [[4, 6, 10000], [5, 7, 12000], [6, 8, 14000], [7, 9, 15000]],
+            B: [[11, 15000], [13, 30000], [15, 40000], [17, 50000]]
         }
     };
 
@@ -273,52 +828,121 @@ function calculate() {
 
     // 5. 計算 A 方案獎金
     let bonusA = 0;
+    let appliedRuleA = null;
     for (let i = cfg.A.length - 1; i >= 0; i--) {
         let [oldReq, newReq, rewardPerSet] = cfg.A[i];
         if (oldBuyout >= oldReq && totalNew >= newReq) {
             let sets = Math.min(oldBuyout, totalNew);
             bonusA = sets * rewardPerSet;
+            appliedRuleA = { oldReq, newReq, rewardPerSet, sets };
             break;
         }
     }
+    
+    let isHalfPenaltyA = false;
     if (bonusA > 0 && xinkaifaTotalInput < 3) {
         bonusA /= 2; // 未達3台新開發，加計收入減半
+        isHalfPenaltyA = true;
     }
 
     // 6. 計算 B 方案獎金
     let bonusB = 0;
+    let appliedRuleB = null;
     if (rawTotalNew >= cfg.minQuota) {
         for (let i = cfg.B.length - 1; i >= 0; i--) {
             let [totalReq, reward] = cfg.B[i];
             if (totalMachines >= totalReq) {
                 bonusB = reward;
+                appliedRuleB = { totalReq, reward };
                 break;
             }
         }
     }
+    
+    let isHalfPenaltyB = false;
     if (bonusB > 0 && xinkaifaTotalInput < 3) {
         bonusB /= 2; // 未達3台新開發，加計收入減半
+        isHalfPenaltyB = true;
     }
 
     // 7. 擇優採計
-    let bestPlan = bonusA >= bonusB ? 'A 方案' : 'B 方案';
+    let bestPlan = bonusA >= bonusB ? 'A' : 'B';
     let finalBonus = Math.max(bonusA, bonusB);
     let netAmount = finalBonus - cost;
 
-    // 8. 顯示結果
-    document.getElementById('resTotalNew').innerText = `${totalNew} 台`;
-    document.getElementById('resTotalMachines').innerText = `${totalMachines} 台`;
-    document.getElementById('resDiff').innerText = `${quotaDiff} 台`;
-    document.getElementById('resCost').innerText = `-$${cost.toLocaleString()} 元`;
-    document.getElementById('resBonusA').innerText = `$${bonusA.toLocaleString()} 元`;
-    document.getElementById('resBonusB').innerText = `$${bonusB.toLocaleString()} 元`;
-    document.getElementById('resBestPlan').innerText = bestPlan;
-    document.getElementById('resFinalBonus').innerText = `$${finalBonus.toLocaleString()} 元`;
-    
-    const netElem = document.getElementById('resNetAmount');
-    netElem.innerText = `$${netAmount.toLocaleString()} 元`;
-    netElem.className = netAmount < 0 ? 'highlight' : 'success';
+    // 8. 動態呈現結果
+    animateNumber(document.getElementById('resTotalNew'), totalNew, false);
+    animateNumber(document.getElementById('resTotalMachines'), totalMachines, false);
+    animateNumber(document.getElementById('resDiff'), quotaDiff, false);
 
+    // 顯示/隱藏懲罰加計成本
+    const costBanner = document.getElementById('costBanner');
+    const resCostElem = document.getElementById('resCost');
+    if (cost > 0) {
+        costBanner.classList.remove('hidden');
+        resCostElem.innerText = `-$${cost.toLocaleString()} 元`;
+    } else {
+        costBanner.classList.add('hidden');
+    }
+
+    // 更新卡片內容
+    const cardA = document.getElementById('cardA');
+    const cardB = document.getElementById('cardB');
+    const bonusAElem = document.getElementById('resBonusA');
+    const bonusBElem = document.getElementById('resBonusB');
+    const detailAElem = document.getElementById('detailA');
+    const detailBElem = document.getElementById('detailB');
+
+    // 格式化卡片獎金
+    animateNumber(bonusAElem, bonusA, true);
+    animateNumber(bonusBElem, bonusB, true);
+
+    // 顯示方案選取細節
+    if (appliedRuleA) {
+        detailAElem.innerHTML = `已符合門檻（舊機 ≥ ${appliedRuleA.oldReq}台、新機 ≥ ${appliedRuleA.newReq}台）。<br>
+        計算組數：${appliedRuleA.sets} 組，每組單價 $${appliedRuleA.rewardPerSet.toLocaleString()} 元。` +
+        (isHalfPenaltyA ? '<br><span style="color: var(--accent-warning); font-weight: 500;">⚠️ 因新開發 < 3台，獎金減半</span>' : '');
+    } else {
+        detailAElem.innerHTML = `未符合任何 A 方案獎勵門檻。<br>(需要新機至少 ${cfg.A[0][1]} 台且舊機至少 ${cfg.A[0][0]} 台)`;
+    }
+
+    if (rawTotalNew < cfg.minQuota) {
+        detailBElem.innerHTML = `<span style="color: var(--accent-warning);">⚠️ 原始新機總台數未達責任額 ${cfg.minQuota} 台，不適用 B 方案。</span>`;
+    } else if (appliedRuleB) {
+        detailBElem.innerHTML = `已符合門檻（新舊合計總台數 ≥ ${appliedRuleB.totalReq}台）。<br>
+        達成固定獎金：$${appliedRuleB.reward.toLocaleString()} 元。` +
+        (isHalfPenaltyB ? '<br><span style="color: var(--accent-warning); font-weight: 500;">⚠️ 因新開發 < 3台，獎金減半</span>' : '');
+    } else {
+        detailBElem.innerHTML = `已達責任額，但新舊合計未達 B 方案最低門檻 ${cfg.B[0][0]} 台。`;
+    }
+
+    // 擇優高亮卡片
+    if (bestPlan === 'A') {
+        cardA.classList.add('best');
+        cardB.classList.remove('best');
+    } else {
+        cardB.classList.add('best');
+        cardA.classList.remove('best');
+    }
+
+    // 淨結算金額
+    const netElem = document.getElementById('resNetAmount');
+    animateNumber(netElem, netAmount, true);
+    if (netAmount < 0) {
+        netElem.className = 'net-amount negative';
+    } else {
+        netElem.className = 'net-amount positive';
+    }
+
+    // 填寫 Audit Log
+    document.getElementById('auditMinQuota').innerText = `${cfg.minQuota} 台`;
+    document.getElementById('auditRawNew').innerText = `${rawTotalNew} 台`;
+    document.getElementById('auditBenpaiExceeded').innerText = `${benpaiExceeded} 台`;
+    document.getElementById('auditXinkaifaExceeded').innerText = `${xinkaifaExceeded} 台`;
+    document.getElementById('auditXinkaifaTotal').innerText = `${xinkaifaTotalInput} 台`;
+    document.getElementById('auditHalfPenalty').innerText = (xinkaifaTotalInput < 3 && finalBonus > 0) ? '已觸發 (新開發未滿 3 台，獎金減半)' : '無觸發';
+
+    // 展開結果區塊
     document.getElementById('resultBox').style.display = 'block';
 }
 </script>
