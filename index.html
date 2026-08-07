@@ -659,14 +659,20 @@
         </button>
     </div>
 
-    <!-- 舊機賣斷 -->
+    <!-- 舊機交易設定 (區分賣斷與租賃) -->
     <div class="case-section">
         <div class="section-title">
             <span>🔄 舊機交易設定</span>
         </div>
-        <div class="form-group" style="margin-bottom: 0;">
-            <label for="oldBuyout">舊機賣斷台數：</label>
+        <div class="form-group" style="margin-bottom: 16px;">
+            <label for="oldBuyout">舊機賣斷台數 (買斷)：</label>
             <input type="number" id="oldBuyout" value="0" min="0">
+            <div class="sub-text">* 此台數將納入 A 方案(組數加計)與 B 方案(總台數合計)之獎金計算。</div>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+            <label for="oldLease">舊機租賃台數 (租的)：</label>
+            <input type="number" id="oldLease" value="0" min="0">
+            <div class="sub-text" style="color: var(--accent-warning);">* 注意：租賃舊機不計入獎勵台數。此處僅供紀錄，不納入計算。</div>
         </div>
     </div>
 
@@ -747,6 +753,8 @@
             <p><span>本牌大案溢出扣除：</span><span class="val warning" id="auditBenpaiExceeded">0 台</span></p>
             <p><span>新開發大案溢出扣除：</span><span class="val warning" id="auditXinkaifaExceeded">0 台</span></p>
             <p><span>新開發總銷售量：</span><span class="val" id="auditXinkaifaTotal">0 台</span></p>
+            <p><span>舊機賣斷採計台數：</span><span class="val" id="auditOldBuyout">0 台</span></p>
+            <p><span>舊機租賃登記台數：</span><span class="val" style="color: var(--text-muted);" id="auditOldLease">0 台 (不計入)</span></p>
             <p><span>新開發減半條款是否觸發：</span><span class="val" id="auditHalfPenalty">無觸發</span></p>
             <p><span>未達責任額懲罰金額：</span><span class="val warning" id="auditCost">$0 元</span></p>
         </div>
@@ -1008,11 +1016,14 @@ function calculate() {
     }
 
     // 填寫 Audit Log
+    const oldLease = parseInt(document.getElementById('oldLease').value) || 0;
     document.getElementById('auditMinQuota').innerText = `${cfg.minQuota} 台`;
     document.getElementById('auditRawNew').innerText = `${rawTotalNew} 台`;
     document.getElementById('auditBenpaiExceeded').innerText = `${benpaiExceeded} 台`;
     document.getElementById('auditXinkaifaExceeded').innerText = `${xinkaifaExceeded} 台`;
     document.getElementById('auditXinkaifaTotal').innerText = `${xinkaifaTotalInput} 台`;
+    document.getElementById('auditOldBuyout').innerText = `${oldBuyout} 台`;
+    document.getElementById('auditOldLease').innerText = `${oldLease} 台 (不計入)`;
     document.getElementById('auditHalfPenalty').innerText = (xinkaifaTotalInput < 3 && finalBonus > 0) ? '已觸發 (新開發未滿 3 台，獎金減半)' : '無觸發';
     document.getElementById('auditCost').innerText = `$${cost.toLocaleString()} 元`;
 
