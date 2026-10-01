@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第三季影印機責任激勵獎金計算器</title>
+    <title>第四季影印機責任激勵獎金計算器 v4.0</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <!-- Google Fonts: Outfit and Noto Sans TC -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -80,6 +80,21 @@
         header {
             text-align: center;
             margin-bottom: 35px;
+        }
+
+                .version-badge {
+            font-size: 0.85rem;
+            vertical-align: middle;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent-primary);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            margin-left: 8px;
+            -webkit-text-fill-color: var(--accent-primary);
         }
 
         header h1 {
@@ -598,8 +613,8 @@
 
 <div class="container">
     <header>
-        <h1>第三季影印機責任激勵獎金計算器</h1>
-        <p>快速計算責任額缺口、A/B方案加計獎金與最終淨利結算</p>
+        <h1>第四季影印機責任激勵獎金計算器 <span class="version-badge">v4.0</span></h1>
+        <p>2026 年第四季（10-12月）責任額缺口、A/B方案加計獎金與最終淨利結算</p>
     </header>
     
     <!-- 單位類型選擇 (Pills Segment Control) -->
@@ -612,7 +627,7 @@
             </button>
             <button type="button" class="segment-btn" data-value="協力單位">
                 協力單位
-                <span class="segment-subtext">屏東/板橋/苗栗/宜蘭/南投/北台中/嘉義/南台南/新莊/基隆</span>
+                <span class="segment-subtext">屏東/板橋/苗栗/宜蘭/南投/北台中/嘉義/南台南/新莊/基隆/專一/中正/員林/彰化/南高雄/內湖</span>
             </button>
         </div>
         <input type="hidden" id="unitType" value="一般單位">
@@ -705,8 +720,13 @@
 
         <!-- 責任成本懲罰 -->
         <div class="cost-banner" id="costBanner">
+            <div style="width:100%">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
             <span class="cost-title">⚠️ 未達責任額懲罰加計成本：</span>
             <span class="cost-amount" id="resCost">-$0</span>
+                </div>
+                <div style="font-size:0.75rem; color:var(--accent-warning); margin-top:6px; opacity:0.85;">* 依辦法規定：未達責任台數之加計成本，上限至該分公司當月損益 1 萬元止。</div>
+            </div>
         </div>
 
         <!-- 方案擇優對比 -->
@@ -760,6 +780,10 @@
             <p><span>未達責任額懲罰金額：</span><span class="val warning" id="auditCost">$0 元</span></p>
         </div>
     </div>
+    <footer style="margin-top: 32px; text-align: center; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 20px;">
+        <div>第四季影印機責任激勵辦法 (版本 v4.0) · 執行期間：2026 年 10-12 月</div>
+        <div style="margin-top: 4px; opacity: 0.7;">OA 直經銷分公司每月結帳日結算</div>
+    </footer>
 </div>
 
 <script>
@@ -882,18 +906,22 @@ function calculate() {
     const rawTotalNew = benpaiTotalInput + xinkaifaTotalInput; // 用於責任額門檻判斷
     const totalMachines = totalNew + oldBuyout;
 
-    // 3. 規則設定 (2026 第 3 季 0703 更新版)
+    // 3. 規則設定 (2026 第 4 季 10-12月 更新版)
     const rules = {
         '協力單位': {
-            minQuota: 4,
+            minQuota: 3, // 第四季調降為 3 台
             costPerDiff: 10000,
-            A: [[3, 4, 10000], [4, 5, 14000], [5, 6, 18000], [6, 7, 23000]],
+            // A方案: [舊機賣斷門檻, 新機台數門檻, 每組加計金額] (舊新各降 1 台)
+            A: [[2, 3, 10000], [3, 4, 14000], [4, 5, 18000], [5, 6, 23000]],
+            // B方案: [新舊合計總台數門檻, 達成獎金]
             B: [[8, 15000], [10, 30000], [12, 40000], [14, 50000]]
         },
         '一般單位': {
-            minQuota: 5,
+            minQuota: 4, // 第四季調降為 4 台
             costPerDiff: 20000,
-            A: [[4, 5, 10000], [5, 6, 14000], [6, 7, 18000], [7, 8, 23000]],
+            // A方案: [舊機賣斷門檻, 新機台數門檻, 每組加計金額] (舊新各降 1 台)
+            A: [[3, 4, 10000], [4, 5, 14000], [5, 6, 18000], [6, 7, 23000]],
+            // B方案: [新舊合計總台數門檻, 達成獎金]
             B: [[10, 15000], [12, 30000], [14, 40000], [16, 50000]]
         }
     };
